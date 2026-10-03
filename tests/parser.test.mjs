@@ -97,3 +97,18 @@ test('decodifica windows-1252 com travessão e aspas (0x96, 0x93, 0x94)', () => 
   const buf = Buffer.from([...Buffer.from('<meta charset="windows-1252"><p>II '), 0x96, 0x20, 0x93, 0x61, 0x94, 0xe7, ...Buffer.from('</p>')]);
   assert.equal(htmlToText(decodeBuffer(buf)), 'II – “a”ç');
 });
+
+test('Lei 7.347: correções da fonte e estrutura do art. 1º e do art. 5º', async () => {
+  const { applyCorrections } = await import('../scripts/lib/parse-law.mjs');
+  const correcoes = JSON.parse(fs.readFileSync(new URL('../data/corrections/lacp.json', import.meta.url)));
+  const bruto = htmlToText(decodeBuffer(fs.readFileSync(new URL('../data/raw/L7347Compilada.html', import.meta.url))));
+  const { text, applied } = applyCorrections(bruto, correcoes);
+  assert.ok(applied.every((c) => c.aplicada === 1));
+  const lacp = parseLaw(text, { id: 'lacp' });
+  assert.equal(lacp.artigos.length, 23);
+  const a1 = lacp.artigos[0].dispositivos;
+  assert.deepEqual(a1.filter((d) => d.tipo === 'inciso').map((d) => d.rotulo.replace('inciso ', '')), ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII']);
+  const a5 = lacp.artigos.find((a) => a.num === '5').dispositivos;
+  assert.match(a5.find((d) => d.rotulo === '§ 4º').texto, /^O requisito da pré-constituição/);
+  assert.equal(a5.filter((d) => d.tipo === 'paragrafo').length, 6);
+});

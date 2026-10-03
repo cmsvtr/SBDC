@@ -1,7 +1,7 @@
 {
   "name": "LexQuest — letra da lei, em jogo",
   "short_name": "LexQuest",
-  "description": "Lições gamificadas da Lei 12.529/2011, RICade, LIA, CDC e CPC.",
+  "description": "Lições gamificadas da Lei 12.529/2011, RICade, Lei 7.347/1985, CDC e CPC.",
   "lang": "pt-BR",
   "start_url": "./",
   "scope": "./",

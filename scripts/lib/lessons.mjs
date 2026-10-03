@@ -36,6 +36,13 @@ function headingLabel(h, acronyms) {
   return { curto: `${tipo}${numero}`, nome: formatHeading(h.nome, acronyms) };
 }
 
+function inicioDoTexto(art) {
+  const t = art.dispositivos[0]?.texto || art.rotulo;
+  if (t.length <= 48) return t.replace(/[:;.,]$/, '');
+  const corte = t.slice(0, 48);
+  return `${corte.slice(0, corte.lastIndexOf(' ')).replace(/[,;:]$/, '')}…`;
+}
+
 function artRange(arts) {
   const first = arts[0], last = arts[arts.length - 1];
   return first === last ? first.rotulo : `${first.rotulo} a ${last.rotulo.replace(/^Art\. /, '')}`;
@@ -89,7 +96,7 @@ export function buildLessons(lawId, artigos) {
       current = null;
       unitKey = key;
       const last = unitPath[unitPath.length - 1];
-      const lbl = last ? headingLabel(last, acronyms) : { curto: 'Disposições', nome: '' };
+      const lbl = last ? headingLabel(last, acronyms) : { curto: 'Texto integral', nome: '' };
       unidades.push({
         id: `${lawId}-u${unidades.length + 1}`,
         titulo: lbl.nome ? `${lbl.curto} — ${lbl.nome}` : lbl.curto,
@@ -99,7 +106,8 @@ export function buildLessons(lawId, artigos) {
     }
 
     const deepest = art.hierarquia[art.hierarquia.length - 1];
-    const titulo = deepest ? headingLabel(deepest, acronyms).nome || headingLabel(deepest, acronyms).curto : 'Disposições';
+    // Norma sem títulos/capítulos: a lição leva o começo do caput do primeiro artigo.
+    const titulo = deepest ? headingLabel(deepest, acronyms).nome || headingLabel(deepest, acronyms).curto : inicioDoTexto(art);
 
     if (devs.length > MAX_DEVICES_PER_LESSON + 2) {
       // Artigo longo (ex.: rol de incisos): vira uma ou mais lições só dele.
