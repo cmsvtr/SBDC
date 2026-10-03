@@ -27,13 +27,14 @@ function loadCorrections(id) {
 fs.mkdirSync(path.join(root, 'data/laws'), { recursive: true });
 fs.mkdirSync(path.join(root, 'data/text'), { recursive: true });
 
+const RESUMO = ['id', 'sigla', 'nome', 'descricao', 'status', 'fonte', 'artigos', 'dispositivos', 'licoes', 'unidades'];
 const index = [];
 for (const law of LAWS) {
   const outFile = path.join(root, 'data/laws', `${law.id}.json`);
   if (only.length && !only.includes(law.id)) {
     if (fs.existsSync(outFile)) {
       const prev = JSON.parse(fs.readFileSync(outFile, 'utf8'));
-      index.push(prev.resumo);
+      index.push(Object.fromEntries(RESUMO.map((k) => [k, prev[k]])));
     }
     continue;
   }

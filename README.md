@@ -7,7 +7,7 @@ os dispositivos de:
 |---|---|---|---|---|---|
 | Lei 12.529/2011 (Defesa da Concorrência) | Planalto | 130 | 505 | 60 | revisada |
 | Regimento Interno do Cade (versão 22/06/2026) | Cade (PDF) | 234 | 1.121 | 126 | beta |
-| Lei 8.429/1992 (Improbidade, compilada) | Planalto | 35 | 219 | 24 | beta |
+| Lei 7.347/1985 (Ação Civil Pública, compilada) | Planalto | 23 | 56 | 7 | beta |
 | Lei 8.078/1990 (CDC, compilado) | Planalto | 130 | 426 | 51 | beta |
 | Lei 13.105/2015 (CPC, compilado) | Planalto | 1.073 | 3.896 | 436 | beta |
 
@@ -35,6 +35,22 @@ pelos testes genéricos, mas ainda não foi conferida dispositivo a dispositivo.
   Perfil), para correção do importador.
 - **Progresso** salvo no navegador, com exportação e importação de backup no Perfil.
 
+## Jogar no celular
+
+O app é publicado automaticamente no GitHub Pages a cada push na `main`:
+**https://cmsvtr.github.io/SBDC/**
+
+1. Abra o link no celular.
+2. Instale na tela inicial:
+   - **Android (Chrome):** toque em "Instalar" no cartão da tela inicial do app, ou use o menu ⋮ → "Instalar app".
+   - **iPhone (Safari):** Compartilhar → "Adicionar à Tela de Início". No iPhone, instalar também evita que o
+     Safari apague o progresso depois de alguns dias sem uso.
+3. Depois da primeira abertura, o app funciona sem internet. Cada norma fica disponível offline depois que
+   você a abre uma vez.
+
+Configuração única no GitHub: **Settings → Pages → Build and deployment → Source: GitHub Actions**. O
+workflow `.github/workflows/pages.yml` roda os testes e publica só o app, sem as fontes brutas.
+
 ## Rodar localmente
 
 Não há dependências de runtime. O app é HTML, CSS e JS puro.
@@ -55,7 +71,7 @@ ou `localhost`.
 3. Rode `npm run build:data` e `npm test`.
 4. Confira o diff de `data/text/<id>.txt`, o texto normalizado, para ver exatamente o que mudou.
 
-Erros de digitação da própria fonte podem ser corrigidos de forma auditável em
+Erros de digitação da própria fonte (ex.: incisos "l" e "ll" no art. 1º da Lei 7.347) podem ser corrigidos de forma auditável em
 `data/corrections/<id>.json` (`[{ "de": "...", "para": "...", "motivo": "..." }]`), sem editar o arquivo
 original.
 
@@ -72,7 +88,7 @@ original.
 
 - **Letra da lei ≠ direito vigente aplicado.** O app ensina o texto como publicado. Exemplos: os valores
   do art. 88 da Lei 12.529 (R$ 400 mi / R$ 30 mi) foram atualizados por portaria interministerial, e
-  dispositivos da LIA têm eficácia afetada por ADIs. As notas do Planalto aparecem na tela, mas o app não
+  a redação do art. 16 da Lei 7.347/1985 (limite territorial da coisa julgada) foi declarada inconstitucional pelo STF (Tema 1.075), sem nota no HTML do Planalto. As notas do Planalto aparecem na tela, mas o app não
   ensina jurisprudência.
 - **O RICade vem de PDF.** A reconstrução das linhas é heurística. Use "Questão com problema?" quando algo
   parecer quebrado.

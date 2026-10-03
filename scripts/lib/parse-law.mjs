@@ -8,8 +8,8 @@ const HEADING_LEVELS = [
 ];
 const HEADING_RE = /^(PARTE|LIVRO|T[ÍI]TULO|CAP[ÍI]TULO|SE[ÇC][ÃA]O|SUBSE[ÇC][ÃA]O|Se[çc][ãa]o|Subse[çc][ãa]o)\b(.*)$/;
 
-const ART_RE = /^Art\.\s*(\d{1,2}(?:\.\d{3})|\d+)\s*[º°o]?\s*(?:-\s*([A-Z]))?\s*[.\-–]?\s*(.*)$/;
-const PAR_RE = /^§\s*(\d+)\s*[º°o]?\s*(?:-\s*([A-Z]))?\s*\.?\s*(.*)$/;
+const ART_RE = /^Art\.\s*(\d{1,2}(?:\.\d{3})|\d+)\s*(?:\.?\s*[º°o])?\s*(?:-\s*([A-Z]))?\s*[.\-–]?\s*(.*)$/;
+const PAR_RE = /^§\s*(\d+)\s*(?:\.?\s*[º°o])?\s*(?:-\s*([A-Z]))?\s*\.?\s*(.*)$/;
 const PAR_UNICO_RE = /^Par[áa]grafo [úu]nico\s*[.:\-–]?\s*(.*)$/i;
 const INCISO_RE = /^([IVXLC]+)(?:\s*-\s*([A-Z])(?=\s*[-–—]))?(?:\s*[-–—]\s*|\s+(?=[a-zà-ú(]))(.*)$/;
 const ALINEA_RE = /^([a-z])\)\s*(.*)$/;
