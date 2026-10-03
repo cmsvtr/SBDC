@@ -10,7 +10,7 @@ export const MAX_ARTICLES_PER_LESSON = 5;
 export const MIN_DEVICES_PER_LESSON = 6;
 
 export function isExercisable(dev, art) {
-  return !art.alteradora && !dev.revogado && !dev.vetado && dev.texto && !['citacao', 'outro'].includes(dev.tipo);
+  return !art.alteradora && !dev.contexto && !dev.revogado && !dev.vetado && dev.texto && !['citacao', 'outro'].includes(dev.tipo);
 }
 
 export function formatHeading(name, acronyms = new Set()) {

@@ -170,6 +170,7 @@ dialog::backdrop { background: rgba(10, 15, 25, .5); }
 .disp.alinea { padding-left: 2.4em; }
 .disp.pena { padding-left: 1.2em; font-style: italic; }
 .disp.citacao, .disp.outro { padding-left: 1.2em; color: var(--muted); }
+.disp.ctx-only { color: var(--muted); }
 .disp.gone { color: var(--muted); font-style: italic; }
 .disp.hl { background: var(--warn-bg); border-radius: 6px; }
 .heading { font-family: system-ui, sans-serif; margin-top: 1.2em; color: var(--brand); }

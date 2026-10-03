@@ -112,3 +112,29 @@ test('Lei 7.347: correções da fonte e estrutura do art. 1º e do art. 5º', as
   assert.match(a5.find((d) => d.rotulo === '§ 4º').texto, /^O requisito da pré-constituição/);
   assert.equal(a5.filter((d) => d.tipo === 'paragrafo').length, 6);
 });
+
+test('recorte: mantém só os artigos e incisos escolhidos, com o caput como contexto', async () => {
+  const { selectArticles } = await import('../scripts/lib/select.mjs');
+  const texto = [
+    'Art. 1º Primeiro artigo.',
+    'Art. 5º Todos são iguais perante a lei:',
+    'I - inciso um;',
+    'XXXII - o Estado promoverá a defesa do consumidor;',
+    'a) alínea do trinta e dois;',
+    'LIV - ninguém será privado da liberdade;',
+    '§ 1º Parágrafo fora do recorte.',
+    'Art. 9º Fora do recorte.',
+  ].join('\n');
+  const { artigos } = parseLaw(texto, { id: 'cf' });
+  const { artigos: sel, faltando } = selectArticles(artigos, { 1: true, 5: ['inciso XXXII', 'inciso LIV', 'inciso XC'] });
+  assert.deepEqual(sel.map((a) => a.num), ['1', '5']);
+  assert.deepEqual(faltando, ['Art. 5, inciso XC']);
+  const a5 = sel[1].dispositivos;
+  assert.deepEqual(a5.map((d) => d.rotulo), ['caput', 'inciso XXXII', 'alínea a', 'inciso LIV']);
+  assert.equal(a5[0].contexto, true);
+  assert.ok(!a5.slice(1).some((d) => d.contexto));
+  const { licoes } = buildLessons('cf', sel);
+  const ids = licoes.flatMap((l) => l.dispositivos);
+  assert.ok(!ids.includes(a5[0].id));
+  assert.equal(ids.length, 4);
+});
