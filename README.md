@@ -6,8 +6,11 @@ os dispositivos de:
 | Norma | Fonte | Artigos | Dispositivos estudáveis | Lições | Status |
 |---|---|---|---|---|---|
 | Lei 12.529/2011 (Defesa da Concorrência) | Planalto | 130 | 505 | 60 | revisada |
+| CF/1988, recorte: arts. 1º–3º, 5º (XXXII, LIV, LV), 37, 170, 172–174 | Planalto | 9 | 92 | 10 | beta |
+| Lei 8.137/1990, recorte: arts. 4º e 7º | Planalto | 2 | 23 | 3 | beta |
 | Regimento Interno do Cade (versão 22/06/2026) | Cade (PDF) | 234 | 1.121 | 126 | beta |
 | Lei 7.347/1985 (Ação Civil Pública, compilada) | Planalto | 23 | 56 | 7 | beta |
+| Decreto-Lei 4.657/1942 (LINDB, compilada) | Planalto | 30 | 79 | 8 | beta |
 | Lei 8.078/1990 (CDC, compilado) | Planalto | 130 | 426 | 51 | beta |
 | Lei 13.105/2015 (CPC, compilado) | Planalto | 1.073 | 3.896 | 436 | beta |
 
@@ -74,6 +77,13 @@ ou `localhost`.
 Erros de digitação da própria fonte (ex.: incisos "l" e "ll" no art. 1º da Lei 7.347) podem ser corrigidos de forma auditável em
 `data/corrections/<id>.json` (`[{ "de": "...", "para": "...", "motivo": "..." }]`), sem editar o arquivo
 original.
+
+### Recortes
+
+Uma norma pode entrar só em parte: `selecao` em `scripts/laws.config.mjs` lista os artigos
+(`true` = artigo inteiro) ou os dispositivos de um artigo (`['inciso LIV']`). O caput acima de um inciso
+escolhido aparece como contexto, mas não gera exercício. Artigos revogados por inteiro (CF, art. 171;
+Lei 8.137, arts. 5º e 6º) não existem no texto vigente e ficam fora do recorte.
 
 ### Regras do importador
 

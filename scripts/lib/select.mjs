@@ -16,7 +16,9 @@ export function selectArticles(artigos, selecao) {
       continue;
     }
     if (regra === true) {
-      out.push(art);
+      // Restos de artigos vizinhos riscados (só a nota "(Revogado pela...)") não
+      // pertencem a este artigo; num recorte eles só confundem.
+      out.push({ ...art, dispositivos: art.dispositivos.filter((d) => !(d.tipo === 'outro' && d.revogado)) });
       continue;
     }
     const byId = new Map(art.dispositivos.map((d) => [d.id, d]));

@@ -227,6 +227,23 @@ export function parseLaw(text, { id }) {
     }
   }
 
+  // Restos de redação riscada: o Planalto às vezes deixa o rótulo ("IX -", "§ 2º -")
+  // fora do <strike>. Sem texto e sem nota, o rótulo some; com só um traço e nota
+  // de revogação, vira "dispositivo revogado" (costuma ser de um artigo vizinho riscado).
+  for (const ar of artigos) {
+    const temFilhos = new Set(ar.dispositivos.map((d) => d.pai).filter(Boolean));
+    ar.dispositivos = ar.dispositivos.flatMap((d) => {
+      if (['caput', 'citacao', 'outro'].includes(d.tipo) || temFilhos.has(d.id)) return [d];
+      if (d.texto === '' && !d.revogado && !d.vetado && d.notas.length === 0) return [];
+      if (/^[\s\-–—.;:,]+$/.test(d.texto)) {
+        return d.notas.some((n) => /revogad/i.test(n))
+          ? [{ ...d, tipo: 'outro', rotulo: 'dispositivo revogado', texto: '', pai: null, revogado: true }]
+          : [];
+      }
+      return [d];
+    });
+  }
+
   // Artigo totalmente revogado/vetado: só o caput, vazio.
   for (const ar of artigos) {
     const vivos = ar.dispositivos.filter((d) => !d.revogado && !d.vetado && d.texto);

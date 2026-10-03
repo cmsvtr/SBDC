@@ -138,3 +138,32 @@ test('recorte: mantém só os artigos e incisos escolhidos, com o caput como con
   assert.ok(!ids.includes(a5[0].id));
   assert.equal(ids.length, 4);
 });
+
+test('CF: recorte com art. 171 revogado ausente e sem restos de redação riscada no art. 170', () => {
+  const cf = JSON.parse(fs.readFileSync(new URL('../data/laws/cf.json', import.meta.url)));
+  assert.deepEqual(cf.artigos.map((a) => a.num), ['1', '2', '3', '5', '37', '170', '172', '173', '174']);
+  const a170 = cf.artigos.find((a) => a.num === '170').dispositivos;
+  assert.equal(a170.filter((d) => d.rotulo === 'inciso IX').length, 1);
+  assert.match(a170.find((d) => d.rotulo === 'inciso IX').texto, /^tratamento favorecido para as empresas de pequeno porte constituídas/);
+  assert.ok(!a170.some((d) => d.rotulo === '§ 2º'));
+  const a5 = cf.artigos.find((a) => a.num === '5').dispositivos;
+  assert.deepEqual(a5.map((d) => d.rotulo), ['caput', 'inciso XXXII', 'inciso LIV', 'inciso LV']);
+  assert.equal(a5[0].contexto, true);
+});
+
+test('Lei 8.137: art. 4º na redação da Lei 12.529 e art. 7º completo', () => {
+  const l = JSON.parse(fs.readFileSync(new URL('../data/laws/lei-8137.json', import.meta.url)));
+  assert.deepEqual(l.artigos.map((a) => a.num), ['4', '7']);
+  const a4 = l.artigos[0].dispositivos;
+  assert.match(a4.find((d) => d.rotulo === 'inciso I').texto, /mediante qualquer forma de ajuste ou acordo de empresas;$/);
+  assert.equal(a4.find((d) => d.tipo === 'pena').texto, 'Pena - reclusão, de 2 (dois) a 5 (cinco) anos e multa.');
+  assert.ok(!a4.some((d) => d.tipo === 'outro'));
+  assert.equal(l.artigos[1].dispositivos.filter((d) => d.tipo === 'inciso').length, 9);
+});
+
+test('LINDB: arts. 1º a 30, com os arts. 20 a 30 da Lei 13.655/2018', () => {
+  const l = JSON.parse(fs.readFileSync(new URL('../data/laws/lindb.json', import.meta.url)));
+  assert.equal(l.artigos.length, 30);
+  assert.match(l.artigos.find((a) => a.num === '20').dispositivos[0].texto, /^Nas esferas administrativa, controladora e judicial, não se decidirá com base em valores jurídicos abstratos/);
+  assert.equal(l.artigos.find((a) => a.num === '25').vetado, true);
+});
