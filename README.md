@@ -35,6 +35,22 @@ pelos testes genéricos, mas ainda não foi conferida dispositivo a dispositivo.
   Perfil), para correção do importador.
 - **Progresso** salvo no navegador, com exportação e importação de backup no Perfil.
 
+## Jogar no celular
+
+O app é publicado automaticamente no GitHub Pages a cada push na `main`:
+**https://cmsvtr.github.io/SBDC/**
+
+1. Abra o link no celular.
+2. Instale na tela inicial:
+   - **Android (Chrome):** toque em "Instalar" no cartão da tela inicial do app, ou use o menu ⋮ → "Instalar app".
+   - **iPhone (Safari):** Compartilhar → "Adicionar à Tela de Início". No iPhone, instalar também evita que o
+     Safari apague o progresso depois de alguns dias sem uso.
+3. Depois da primeira abertura, o app funciona sem internet. Cada norma fica disponível offline depois que
+   você a abre uma vez.
+
+Configuração única no GitHub: **Settings → Pages → Build and deployment → Source: GitHub Actions**. O
+workflow `.github/workflows/pages.yml` roda os testes e publica só o app, sem as fontes brutas.
+
 ## Rodar localmente
 
 Não há dependências de runtime. O app é HTML, CSS e JS puro.

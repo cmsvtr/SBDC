@@ -9,6 +9,35 @@ const hud = document.getElementById('hud');
 const toastEl = document.getElementById('toast');
 
 let estado = S.carregar();
+
+// ---------------------------------------------------------------------------
+// Celular: instalação na tela inicial e armazenamento persistente
+// ---------------------------------------------------------------------------
+
+let pedidoInstalacao = null; // evento beforeinstallprompt (Android/Chrome)
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  pedidoInstalacao = e;
+  if (!location.hash || location.hash === '#/') rota();
+});
+window.addEventListener('appinstalled', () => {
+  pedidoInstalacao = null;
+  toast('LexQuest instalado na tela inicial.');
+});
+
+const instalado = () => window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+const ehIOS = () => /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+// Pede ao navegador para não apagar o progresso por falta de espaço ou inatividade.
+navigator.storage?.persist?.().catch(() => {});
+
+function vibrar(padrao) {
+  try {
+    navigator.vibrate?.(padrao);
+  } catch {
+    /* sem suporte */
+  }
+}
 let indice = null; // data/laws/index.json
 const cacheLeis = new Map(); // id -> { lei, idx }
 let sessao = null;
@@ -140,8 +169,32 @@ async function telaInicio() {
       pend ? h('a', { class: 'btn small ghost', href: `#/revisao/${l.id}` }, `🔁 Revisar ${pend} pendente${pend > 1 ? 's' : ''}`) : null);
   });
 
-  render(resumoDia, h('h2', { class: 'section-title' }, 'Normas'), ...cards,
+  render(resumoDia, cartaoInstalar(), h('h2', { class: 'section-title' }, 'Normas'), ...cards,
     h('p', { class: 'muted small center' }, 'Textos oficiais do Planalto e do Cade. As questões são geradas a partir da letra da lei.'));
+}
+
+function cartaoInstalar() {
+  if (instalado() || estado.config.ocultarInstalar) return null;
+  const fechar = h('button', { class: 'btn link small', onclick: () => { estado.config.ocultarInstalar = true; salvar(); rota(); } }, 'Agora não');
+  if (pedidoInstalacao) {
+    return h('section', { class: 'card install' },
+      h('p', {}, h('strong', {}, '📲 Instale o LexQuest'), ' — abre como app, em tela cheia, e funciona sem internet.'),
+      h('div', { class: 'row' },
+        h('button', { class: 'btn', onclick: async () => {
+          pedidoInstalacao.prompt();
+          await pedidoInstalacao.userChoice.catch(() => {});
+          pedidoInstalacao = null;
+          rota();
+        } }, 'Instalar'),
+        fechar));
+  }
+  if (ehIOS()) {
+    return h('section', { class: 'card install' },
+      h('p', {}, h('strong', {}, '📲 Adicione à Tela de Início'), ': no Safari, toque em Compartilhar ', h('span', { 'aria-hidden': 'true' }, '⬆️'), ' e depois em “Adicionar à Tela de Início”.'),
+      h('p', { class: 'muted small' }, 'No iPhone isso também evita que o Safari apague seu progresso após alguns dias sem uso.'),
+      fechar);
+  }
+  return null;
 }
 
 // ---------------------------------------------------------------------------
@@ -449,6 +502,7 @@ function responder(resposta, rodape, corpo) {
     s.erros++;
     s.combo = 0;
     if (s.modo === 'licao') s.vidas--;
+    vibrar(120);
   }
   if (ganho) {
     G.ganharXp(estado, ganho);
