@@ -174,7 +174,8 @@ async function telaInicio() {
 }
 
 function cartaoInstalar() {
-  if (instalado() || estado.config.ocultarInstalar) return null;
+  const embutido = (() => { try { return window.self !== window.top; } catch { return true; } })();
+  if (embutido || instalado() || estado.config.ocultarInstalar) return null;
   const fechar = h('button', { class: 'btn link small', onclick: () => { estado.config.ocultarInstalar = true; salvar(); rota(); } }, 'Agora não');
   if (pedidoInstalacao) {
     return h('section', { class: 'card install' },
