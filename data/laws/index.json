@@ -1,0 +1,62 @@
+[
+  {
+    "id": "lei-12529",
+    "sigla": "Lei 12.529/2011",
+    "nome": "Lei de Defesa da Concorrência",
+    "descricao": "Estrutura o SBDC e dispõe sobre a prevenção e a repressão às infrações contra a ordem econômica.",
+    "status": "revisada",
+    "fonte": "https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2011/lei/l12529.htm",
+    "artigos": 130,
+    "dispositivos": 505,
+    "licoes": 60,
+    "unidades": 9
+  },
+  {
+    "id": "ricade",
+    "sigla": "RICade",
+    "nome": "Regimento Interno do Cade",
+    "descricao": "Versão de 22/06/2026 publicada pelo Cade.",
+    "status": "beta",
+    "fonte": "https://www.gov.br/cade/pt-br/acesso-a-informacao/institucional/regimento-interno",
+    "artigos": 234,
+    "dispositivos": 1121,
+    "licoes": 126,
+    "unidades": 13
+  },
+  {
+    "id": "lia",
+    "sigla": "Lei 8.429/1992",
+    "nome": "Lei de Improbidade Administrativa",
+    "descricao": "Texto compilado, com as alterações da Lei 14.230/2021.",
+    "status": "beta",
+    "fonte": "https://www.planalto.gov.br/ccivil_03/leis/l8429compilada.htm",
+    "artigos": 35,
+    "dispositivos": 219,
+    "licoes": 24,
+    "unidades": 8
+  },
+  {
+    "id": "cdc",
+    "sigla": "Lei 8.078/1990",
+    "nome": "Código de Defesa do Consumidor",
+    "descricao": "Texto compilado do Planalto.",
+    "status": "beta",
+    "fonte": "https://www.planalto.gov.br/ccivil_03/leis/l8078compilado.htm",
+    "artigos": 130,
+    "dispositivos": 426,
+    "licoes": 51,
+    "unidades": 6
+  },
+  {
+    "id": "cpc",
+    "sigla": "Lei 13.105/2015",
+    "nome": "Código de Processo Civil",
+    "descricao": "Texto compilado do Planalto.",
+    "status": "beta",
+    "fonte": "https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2015/lei/l13105.htm",
+    "artigos": 1073,
+    "dispositivos": 3896,
+    "licoes": 436,
+    "unidades": 32
+  }
+]

@@ -1,0 +1,15 @@
+{
+  "name": "lexquest",
+  "version": "0.1.0",
+  "private": true,
+  "description": "App gamificado (PWA) para aprender a letra da Lei 12.529/2011, RICade, LIA, CDC e CPC.",
+  "type": "module",
+  "scripts": {
+    "build:data": "node scripts/build-laws.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "start": "python3 -m http.server 8080"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
