@@ -161,7 +161,8 @@ async function telaInicio() {
       h('a', { href: `#/lei/${l.id}`, class: 'law-link' },
         h('div', { class: 'law-head' },
           h('div', {},
-            h('p', { class: 'eyebrow' }, l.sigla, l.status === 'beta' ? h('span', { class: 'badge', title: 'Importação automática ainda não revisada dispositivo a dispositivo' }, 'beta') : null),
+            h('p', { class: 'eyebrow' }, l.sigla, l.status === 'beta' ? h('span', { class: 'badge', title: 'Importação automática ainda não revisada dispositivo a dispositivo' }, 'beta') : null,
+            l.recorte ? h('span', { class: 'badge', title: 'Só os artigos selecionados' }, 'recorte') : null),
             h('h2', {}, l.nome)),
           h('span', { class: 'pct' }, `${Math.round(p.pct * 100)}%`)),
         h('p', { class: 'muted small' }, `${fmt(l.artigos)} artigos · ${fmt(l.dispositivos)} dispositivos · ${l.licoes} lições`),
@@ -272,9 +273,9 @@ function renderArtigo(art, idx, destaque) {
   const blocos = [];
   for (const d of art.dispositivos) {
     if (d.tipo === 'caput') {
-      blocos.push(h('p', { class: 'disp caput' }, h('strong', {}, art.rotulo, /º$/.test(art.rotulo) ? ' ' : '. '), d.texto || (d.revogado ? '(revogado)' : d.vetado ? '(vetado)' : '')));
+      blocos.push(h('p', { class: `disp caput ${d.contexto ? 'ctx-only' : ''}` }, h('strong', {}, art.rotulo, /º$/.test(art.rotulo) ? ' ' : '. '), d.texto || (d.revogado ? '(revogado)' : d.vetado ? '(vetado)' : '')));
     } else {
-      const cls = `disp ${d.tipo} ${d.revogado || d.vetado ? 'gone' : ''} ${destaque && destaque.has(d.id) ? 'hl' : ''}`;
+      const cls = `disp ${d.tipo} ${d.contexto ? 'ctx-only' : ''} ${d.revogado || d.vetado ? 'gone' : ''} ${destaque && destaque.has(d.id) ? 'hl' : ''}`;
       const rotulo = d.tipo === 'paragrafo' ? `${d.rotulo === 'parágrafo único' ? 'Parágrafo único.' : d.rotulo} ` :
         d.tipo === 'inciso' ? `${d.rotulo.replace('inciso ', '')} – ` :
         d.tipo === 'alinea' ? `${d.rotulo.replace('alínea ', '')}) ` : '';
@@ -283,6 +284,7 @@ function renderArtigo(art, idx, destaque) {
     const notas = (d.notas || []).filter((n) => /vide|adi|adpf|suspens|declarad/i.test(n));
     if (notas.length) blocos.push(h('p', { class: 'nota' }, '⚠ ', notas.join(' ')));
   }
+  if (art.recorte) blocos.push(h('p', { class: 'nota' }, 'Recorte: só os dispositivos selecionados deste artigo.'));
   return h('article', { class: 'artigo', id: `art-${art.num}` }, blocos);
 }
 

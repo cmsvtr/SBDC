@@ -9,6 +9,7 @@ import { decodeBuffer, htmlToText } from './lib/html-to-text.mjs';
 import { pdfToRawText, layoutToUnits } from './lib/pdf-to-text.mjs';
 import { parseLaw, applyCorrections } from './lib/parse-law.mjs';
 import { buildLessons, collectAcronyms, formatHeading } from './lib/lessons.mjs';
+import { selectArticles } from './lib/select.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const only = process.argv.slice(2);
@@ -27,7 +28,7 @@ function loadCorrections(id) {
 fs.mkdirSync(path.join(root, 'data/laws'), { recursive: true });
 fs.mkdirSync(path.join(root, 'data/text'), { recursive: true });
 
-const RESUMO = ['id', 'sigla', 'nome', 'descricao', 'status', 'fonte', 'artigos', 'dispositivos', 'licoes', 'unidades'];
+const RESUMO = ['id', 'sigla', 'nome', 'descricao', 'status', 'fonte', 'recorte', 'artigos', 'dispositivos', 'licoes', 'unidades'];
 const index = [];
 for (const law of LAWS) {
   const outFile = path.join(root, 'data/laws', `${law.id}.json`);
@@ -38,10 +39,20 @@ for (const law of LAWS) {
     }
     continue;
   }
+  if (!fs.existsSync(path.join(root, 'data/raw', law.arquivo))) {
+    console.warn(`  [${law.id}] fonte data/raw/${law.arquivo} ainda não enviada; norma fora do app.`);
+    continue;
+  }
   const raw = loadText(law);
   const { text, applied } = applyCorrections(raw, loadCorrections(law.id));
   for (const c of applied.filter((c) => !c.aplicada)) console.warn(`  [${law.id}] correção não encontrada: "${c.de}"`);
-  const { artigos, avisos } = parseLaw(text, { id: law.id });
+  const parsed = parseLaw(text, { id: law.id });
+  const avisos = parsed.avisos;
+  const { artigos, faltando } = selectArticles(parsed.artigos, law.selecao);
+  for (const f of faltando) {
+    avisos.push(`Recorte: ${f} não encontrado na fonte.`);
+    console.warn(`  [${law.id}] recorte: ${f} não encontrado`);
+  }
   const { unidades, licoes } = buildLessons(law.id, artigos);
   const siglas = collectAcronyms(artigos);
   for (const a of artigos) for (const hh of a.hierarquia) hh.titulo = formatHeading(hh.nome, siglas);
@@ -49,7 +60,7 @@ for (const law of LAWS) {
 
   const resumo = {
     id: law.id, sigla: law.sigla, nome: law.nome, descricao: law.descricao, status: law.status,
-    fonte: law.fonte, artigos: artigos.length, dispositivos, licoes: licoes.length, unidades: unidades.length,
+    fonte: law.fonte, recorte: Boolean(law.selecao), artigos: artigos.length, dispositivos, licoes: licoes.length, unidades: unidades.length,
   };
   const out = { ...resumo, geradoEm: new Date().toISOString().slice(0, 10), correcoes: applied, avisos, unidades, licoes, artigos };
   fs.writeFileSync(outFile, JSON.stringify(out));

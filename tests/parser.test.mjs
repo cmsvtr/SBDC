@@ -112,3 +112,58 @@ test('Lei 7.347: correções da fonte e estrutura do art. 1º e do art. 5º', as
   assert.match(a5.find((d) => d.rotulo === '§ 4º').texto, /^O requisito da pré-constituição/);
   assert.equal(a5.filter((d) => d.tipo === 'paragrafo').length, 6);
 });
+
+test('recorte: mantém só os artigos e incisos escolhidos, com o caput como contexto', async () => {
+  const { selectArticles } = await import('../scripts/lib/select.mjs');
+  const texto = [
+    'Art. 1º Primeiro artigo.',
+    'Art. 5º Todos são iguais perante a lei:',
+    'I - inciso um;',
+    'XXXII - o Estado promoverá a defesa do consumidor;',
+    'a) alínea do trinta e dois;',
+    'LIV - ninguém será privado da liberdade;',
+    '§ 1º Parágrafo fora do recorte.',
+    'Art. 9º Fora do recorte.',
+  ].join('\n');
+  const { artigos } = parseLaw(texto, { id: 'cf' });
+  const { artigos: sel, faltando } = selectArticles(artigos, { 1: true, 5: ['inciso XXXII', 'inciso LIV', 'inciso XC'] });
+  assert.deepEqual(sel.map((a) => a.num), ['1', '5']);
+  assert.deepEqual(faltando, ['Art. 5, inciso XC']);
+  const a5 = sel[1].dispositivos;
+  assert.deepEqual(a5.map((d) => d.rotulo), ['caput', 'inciso XXXII', 'alínea a', 'inciso LIV']);
+  assert.equal(a5[0].contexto, true);
+  assert.ok(!a5.slice(1).some((d) => d.contexto));
+  const { licoes } = buildLessons('cf', sel);
+  const ids = licoes.flatMap((l) => l.dispositivos);
+  assert.ok(!ids.includes(a5[0].id));
+  assert.equal(ids.length, 4);
+});
+
+test('CF: recorte com art. 171 revogado ausente e sem restos de redação riscada no art. 170', () => {
+  const cf = JSON.parse(fs.readFileSync(new URL('../data/laws/cf.json', import.meta.url)));
+  assert.deepEqual(cf.artigos.map((a) => a.num), ['1', '2', '3', '5', '37', '170', '172', '173', '174']);
+  const a170 = cf.artigos.find((a) => a.num === '170').dispositivos;
+  assert.equal(a170.filter((d) => d.rotulo === 'inciso IX').length, 1);
+  assert.match(a170.find((d) => d.rotulo === 'inciso IX').texto, /^tratamento favorecido para as empresas de pequeno porte constituídas/);
+  assert.ok(!a170.some((d) => d.rotulo === '§ 2º'));
+  const a5 = cf.artigos.find((a) => a.num === '5').dispositivos;
+  assert.deepEqual(a5.map((d) => d.rotulo), ['caput', 'inciso XXXII', 'inciso LIV', 'inciso LV']);
+  assert.equal(a5[0].contexto, true);
+});
+
+test('Lei 8.137: art. 4º na redação da Lei 12.529 e art. 7º completo', () => {
+  const l = JSON.parse(fs.readFileSync(new URL('../data/laws/lei-8137.json', import.meta.url)));
+  assert.deepEqual(l.artigos.map((a) => a.num), ['4', '7']);
+  const a4 = l.artigos[0].dispositivos;
+  assert.match(a4.find((d) => d.rotulo === 'inciso I').texto, /mediante qualquer forma de ajuste ou acordo de empresas;$/);
+  assert.equal(a4.find((d) => d.tipo === 'pena').texto, 'Pena - reclusão, de 2 (dois) a 5 (cinco) anos e multa.');
+  assert.ok(!a4.some((d) => d.tipo === 'outro'));
+  assert.equal(l.artigos[1].dispositivos.filter((d) => d.tipo === 'inciso').length, 9);
+});
+
+test('LINDB: arts. 1º a 30, com os arts. 20 a 30 da Lei 13.655/2018', () => {
+  const l = JSON.parse(fs.readFileSync(new URL('../data/laws/lindb.json', import.meta.url)));
+  assert.equal(l.artigos.length, 30);
+  assert.match(l.artigos.find((a) => a.num === '20').dispositivos[0].texto, /^Nas esferas administrativa, controladora e judicial, não se decidirá com base em valores jurídicos abstratos/);
+  assert.equal(l.artigos.find((a) => a.num === '25').vetado, true);
+});
